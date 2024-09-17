@@ -6,7 +6,7 @@ from models import db
 from my_password import password as db_password
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://root:{db_password}@localhost/bakery_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://root:{db_password}@localhost/movie_db'
 db.init_app(app)
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -6,10 +6,9 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 
-class BakeryProduct(Base):
-    __tablename__ = 'bakery_items'
+class Movie(Base):
+    __tablename__ = 'movies'
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(db.String(100), nullable=False)
-    price: Mapped[float] = mapped_column(db.Float, nullable=False)
-    quantity: Mapped[int] = mapped_column(db.Integer, nullable=False)
-    category: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    title: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    director: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    year: Mapped[int] = mapped_column(db.Integer, nullable=False)

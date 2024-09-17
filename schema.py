@@ -1,78 +1,75 @@
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
-from models import BakeryProduct as ProductModel, db
+from models import Movie as MovieModel, db
 from sqlalchemy.orm import Session
 
-class Product(SQLAlchemyObjectType):
+class Movie(SQLAlchemyObjectType):
     class Meta:
-        model = ProductModel
+        model = MovieModel
 
 class Query(graphene.ObjectType):
-    products = graphene.List(Product)
+    movies = graphene.List(Movie)
 
-    def resolve_products(self, info):
-        return db.session.execute(db.select(ProductModel)).scalars()
+    def resolve_movies(self, info):
+        return db.session.execute(db.select(MovieModel)).scalars()
     
-class AddProduct(graphene.Mutation):
+class AddMovie(graphene.Mutation):
     class Arguments:
-        name = graphene.String(required=True)
-        price = graphene.Float(required=True)
-        quantity = graphene.Int(required=True)
-        category = graphene.String(required=True)
+        title = graphene.String(required=True)
+        director = graphene.String(required=True)
+        year = graphene.Int(required=True)
 
-    product = graphene.Field(Product)
+    movie = graphene.Field(Movie)
 
-    def mutate(self, info, name, price, quantity, category):
+    def mutate(self, info, title, director, year):
         with Session(db.engine) as session:
             with session.begin():
-                product = ProductModel(name=name, price=price, quantity=quantity, category=category)
-                session.add(product)
+                movie = MovieModel(title=title, director=director, year=year)
+                session.add(movie)
 
-            session.refresh(product)
-            return AddProduct(product=product)
+            session.refresh(movie)
+            return AddMovie(movie=movie)
         
-class UpdateProduct(graphene.Mutation):
+class UpdateMovie(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
-        name = graphene.String(required=True)
-        price = graphene.Float(required=True)
-        quantity = graphene.Int(required=True)
-        category = graphene.String(required=True)
+        title = graphene.String(required=True)
+        director = graphene.String(required=True)
+        year = graphene.Int(required=True)
 
-    product = graphene.Field(Product)
+    movie = graphene.Field(Movie)
 
-    def mutate(self, info, id, name, price, quantity, category):
+    def mutate(self, info, id, title, director, year):
         with Session(db.engine) as session:
             with session.begin():
-                product = session.execute(db.select(ProductModel).where(ProductModel.id == id)).scalars().first()
-                if product:
-                    product.name = name
-                    product.price = price
-                    product.quantity = quantity
-                    product.category = category
+                movie = session.execute(db.select(MovieModel).where(MovieModel.id == id)).scalars().first()
+                if movie:
+                    movie.title = title
+                    movie.director = director
+                    movie.year = year
                 else:
                     return None
-            session.refresh(product)
-            return UpdateProduct(product=product)
+            session.refresh(movie)
+            return UpdateMovie(movie=movie)
 
-class DeleteProduct(graphene.Mutation):
+class DeleteMovie(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
 
-    product = graphene.Field(Product)
+    movie = graphene.Field(Movie)
 
     def mutate(self, info, id):
         with Session(db.engine) as session:
             with session.begin():
-                product = session.execute(db.select(ProductModel).where(ProductModel.id == id)).scalars().first()
-                if product:
-                    session.delete(product)
+                movie = session.execute(db.select(MovieModel).where(MovieModel.id == id)).scalars().first()
+                if movie:
+                    session.delete(movie)
                 else:
                     return None
-            session.refresh(product)
-            return DeleteProduct(product=product)
+            session.refresh(movie)
+            return DeleteMovie(movie=movie)
 
 class Mutation(graphene.ObjectType):
-    create_product = AddProduct.Field()
-    update_product = UpdateProduct.Field()
-    delete_product = DeleteProduct.Field()
+    create_movie = AddMovie.Field()
+    update_movie = UpdateMovie.Field()
+    delete_movie = DeleteMovie.Field()
